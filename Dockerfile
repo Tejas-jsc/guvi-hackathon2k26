@@ -1,51 +1,28 @@
-# Use a lightweight Python 3.9 image
+# Use a slim Python 3.9 image for stability and speed
 FROM python:3.9-slim
 
-# Install system dependencies (FFmpeg is required for librosa/audio)
+# Step 1: Install system dependencies for audio processing
+# librosa and other AI audio libraries REQUIRE ffmpeg and libsndfile
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libsndfile1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Set the directory inside the container
+# Step 2: Set the application directory
 WORKDIR /app
 
-# Copy and install Python dependencies
-# We copy requirements first to take advantage of Docker caching
+# Step 3: Copy and install Python dependencies
+# Ensure 'uvicorn' and 'python-multipart' are in your requirements.txt
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all your project files into the container
+# Step 4: Copy the rest of your project files
 COPY . .
 
-# Expose port 8000 (though Railway will use its own $PORT variable)
+# Step 5: Expose the port (Railway uses this internally)
 EXPOSE 8000
 
-# The PRODIGY Command: 
-# Using 'python -m uvicorn' ensures Python finds the module in its path
-CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]# Use a lightweight Python 3.9 image
-FROM python:3.9-slim
-
-# Install system dependencies (FFmpeg is required for librosa/audio)
-RUN apt-get update && apt-get install -y \
-    ffmpeg \
-    libsndfile1 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set the directory inside the container
-WORKDIR /app
-
-# Copy and install Python dependencies
-# We copy requirements first to take advantage of Docker caching
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy all your project files into the container
-COPY . .
-
-# Expose port 8000 (though Railway will use its own $PORT variable)
-EXPOSE 8000
-
-# The PRODIGY Command: 
-# Using 'python -m uvicorn' ensures Python finds the module in its path
+# Step 6: The "Prodigy" Start Command
+# Using 'python -m uvicorn' tells Python to search its internal 
+# packages for uvicorn, which bypasses "not found" errors.
 CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
