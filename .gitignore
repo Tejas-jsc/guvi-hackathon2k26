@@ -1,0 +1,23 @@
+# --- Security ---
+.env
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# --- Audio Temporary Files ---
+# This ensures that the temp_ files created by main.py stay on your machine/server
+temp_*.mp3
+temp_*.wav
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
+
+# --- IDEs ---
+.vscode/
+.idea/
